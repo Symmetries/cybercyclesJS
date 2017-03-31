@@ -37,7 +37,6 @@ APP.output.setPixel = function (ctx, x, y, boardWidth, boardHeight, color) {
         ctx.fill();
         ctx.closePath();
     } else {
-        //console.log("nope");
         gameWidth = ctx.canvas.width;
         gameHeight = boardHeight * ctx.canvas.width / boardWidth;
         side = gameHeight/boardHeight;

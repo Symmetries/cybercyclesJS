@@ -17,6 +17,9 @@ function keyDownHandler(e) {
     else if(e.keyCode == 37) {
         APP.leftPressed = true;
     }
+    if (e.keyCode == 32){
+        APP.spacePressed = true;
+    }
 }
 
 APP.input.getArrowInputs = function(){
@@ -32,9 +35,14 @@ APP.input.getArrowInputs = function(){
     return "n";
 };
 
+APP.input.getSpace = function(){
+    return APP.spacePressed;
+}
+
 APP.input.resetInputs = function() {
     APP.upPressed = false;
     APP.downPressed = false;
     APP.leftPressed = false;
     APP.rightPressed = false;
+    APP.spacePressed = false;
 };

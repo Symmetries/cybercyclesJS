@@ -64,11 +64,8 @@ APP.Game = class{
     // it is an array of strings being either "u", "d", "l" or "r",
     // depending on the direction of the cybercycles
     update(moves){
-        // TODO: update board
-        console.log(moves);
         for (var i = 0; i < moves.length; i++){
             if(this.statuses[i]){
-                console.log(i);
                 var vx = 0;
                 var vy = 0;
                 if (moves[i] == "u"){
@@ -83,15 +80,13 @@ APP.Game = class{
                     vx = this.prev[i][0];
                     vy = this.prev[i][1];
                 }
-                this.xs[i] += vx;
-                this.ys[i] += vy;
-                if (this.ys[i] === -1 || this.ys[i] === this.boardHeight){
+                
+                if (this.board[this.xs[i] + vx][this.ys[i] + vy]) {
                     this.statuses[i] = false;
-                } else if(this.xs[i] === -1 || this.xs[i] === this.boardWidth){
-                    this.statuses[i] = false;
-                } else if (this.board[this.xs[i]][this.ys[i]]) {
-                    this.statuses[i] = false;
+                    console.log("dead");
                 } else {
+                    this.xs[i] += vx;
+                    this.ys[i] += vy;
                     this.board[this.xs[i]][this.ys[i]] = true;
                     this.prev[i] = [vx, vy];
                 }
@@ -99,13 +94,12 @@ APP.Game = class{
         }
     }
     isOver(){
-        var res = false;
+        var res = true;
         for (var i = 0; i < this.statuses.length; i++){
-            if (!this.statuses[i]){
-                res = true;
+            if (this.statuses[i]){
+                res = false;
             }
         }
         return res;
     }
-    
 };
