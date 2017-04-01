@@ -7,74 +7,66 @@ APP.ai.nextMove = function(xs, ys, player, board){
     var posX = xs[player];
     var posY = ys[player];
     var areas = [];
-    console.log("xs, ys");
-    console.log(xs);
-    console.log(ys);
+    var tot;
+    var movesAhead = 2;
+    //console.log("Player :" + player);
     if (APP.ai.isPossible(posX, posY - 1, board)){
         moves.push("u");
-        // var tot = 0;
-        // for (var i = 0; i < xs.length; i++){
-        //     if (i === player) {
-        //         tot += APP.ai.calculateArea(posX, posY-1, board);
-        //     } else
-        //         tot -= APP.ai.calculateArea(xs[i], ys[i], board);
-        //         console.log("specific");
-        //         console.log(xs[i]);
-        //         console.log(ys[i]);
-        // }
-        // console.log("testu");
+        tot = 0;
+        for (var i = 0; i < xs.length; i++){
+            if (i === player) {
+                tot += APP.ai.calculateAreaR(posX, posY-1, board, movesAhead);
+            } else
+                tot -= 3 * APP.ai.calculateArea(xs[i], ys[i], board);
+        }
+        // console.log("test: u");
         // console.log(tot);
-        // areas.push(tot);
-        areas.push(APP.ai.calculateArea(posX, posY-1, board));
+        areas.push(tot);
+        //areas.push(APP.ai.calculateArea(posX, posY-1, board));
     }
     if (APP.ai.isPossible(posX, posY + 1, board)){
         moves.push("d");
-        // for (var i = 0; i < xs.length; i++){
-        //     if (i === player) {
-        //         tot += APP.ai.calculateArea(posX, posY+1, board);
-        //     } else
-        //         tot -= APP.ai.calculateArea(xs[i], ys[i], board);
-        //         console.log("specific");
-        //         console.log(xs[i]);
-        //         console.log(ys[i]);
-        // }
-        // areas.push(tot);
-        // console.log("testd");
+        tot = 0;
+        for (var i = 0; i < xs.length; i++){
+            if (i === player) {
+                tot += APP.ai.calculateAreaR(posX, posY+1, board, movesAhead);
+            } else
+                tot -= 3 *  APP.ai.calculateArea(xs[i], ys[i], board);
+        }
+        areas.push(tot);
+        // console.log("test: d");
         // console.log(tot);
-        areas.push(APP.ai.calculateArea(posX, posY+1, board));
+        //areas.push(APP.ai.calculateArea(posX, posY+1, board));
     }
     if (APP.ai.isPossible(posX - 1, posY, board)){
         moves.push("l");
-        // for (var i = 0; i < xs.length; i++){
-        //     if (i === player) {
-        //         tot += APP.ai.calculateArea(posX -1, posY, board);
-        //     } else
-        //         tot -= APP.ai.calculateArea(xs[i], ys[i], board);
-        //         console.log("specific");
-        //         console.log(xs[i]);
-        //         console.log(ys[i]);
-        // }
-        // areas.push(tot);
+        tot = 0;
+        for (var i = 0; i < xs.length; i++){
+            if (i === player) {
+                tot += APP.ai.calculateAreaR(posX -1, posY, board, movesAhead);
+            } else
+                tot -= 3 * APP.ai.calculateArea(xs[i], ys[i], board);
+        }
+        areas.push(tot);
         // console.log("l");
         // console.log(tot);
-        areas.push(APP.ai.calculateArea(posX-1, posY, board));
+        //areas.push(APP.ai.calculateArea(posX-1, posY, board));
     }
     
     if (APP.ai.isPossible(posX + 1, posY, board)){
         moves.push("r");
-        // for (var i = 0; i < xs.length; i++){
-        //     if (i === player) {
-        //         tot += APP.ai.calculateArea(posX+1, posY, board);
-        //     } else
-        //         tot -= APP.ai.calculateArea(xs[i], ys[i], board);
-        // }
-        // areas.push(tot);
-        areas.push(APP.ai.calculateArea(posX+1, posY, board));
+        tot = 0;
+        for (var i = 0; i < xs.length; i++){
+            if (i === player) {
+                tot += APP.ai.calculateAreaR(posX+1, posY, board, movesAhead);
+            } else
+                tot -= 3 * APP.ai.calculateArea(xs[i], ys[i], board);
+        }
+        areas.push(tot);
+        //areas.push(APP.ai.calculateArea(posX+1, posY, board));
     }
     if (moves.length > 0){
-        var maxArea = -board.length * board[0].length;
-        console.log("max area");
-        console.log(maxArea);
+        var maxArea = -8 * board.length * board[0].length;
         for (var i = 0; i < moves.length; i++){
             if (areas[i] > maxArea){
                 maxArea = areas[i];
@@ -86,15 +78,8 @@ APP.ai.nextMove = function(xs, ys, player, board){
                 goodMoves.push(moves[i]);
             }
         }
-        console.log("test");
-        // console.log(player);
-        console.log(board[posX][posY]);
-        console.log(moves);
-        console.log(areas);
-        console.log(goodMoves);
-        // console.log(goodMoves);
         var choice = Math.floor(Math.random() * goodMoves.length);
-        console.log(goodMoves[choice]);
+        //console.log(goodMoves[choice]);
         return goodMoves[choice];
     }
     return ["u","d","l","r"][Math.floor(Math.random() * 4)];
@@ -142,8 +127,8 @@ APP.ai.calculateArea = function(x, y, board){
             positions.push([posX+1, posY]);
         }
         //console.log(positions);
-        if (currentIndex > area - 1 ||
-            area > board.length*board[0].length/2){
+        if (currentIndex > area - 1){ //||
+           // area > board.length*board[0].length/2){
             done = true;
         } else {
             posX = positions[currentIndex][0];
@@ -154,6 +139,240 @@ APP.ai.calculateArea = function(x, y, board){
     return area;
 };
 
+APP.ai.calculateAreaR = function(mex, mey, board, level){
+    var area = -1;
+    var maxArea = -board.length * board[0].length;
+    if (level === 1){
+        if (!board[mex][mey]){
+            board[mex][mey] = true;
+            //up -y
+            if (APP.ai.isPossible(mex, mey - 1, board)){
+                area = APP.ai.calculateArea(mex, mey-1, board);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            // down +y
+            if (APP.ai.isPossible(mex, mey + 1, board)){
+                area = APP.ai.calculateArea(mex, mey+1, board);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            // left -x
+            if (APP.ai.isPossible(mex-1, mey, board)){
+                area = APP.ai.calculateArea(mex- 1, mey, board);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            //right + x
+            if (APP.ai.isPossible(mex + 1, mey, board)){
+                area = APP.ai.calculateArea(mex + 1, mey, board);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            board[mex][mey] = false;
+        }
+    } else {
+        if (!board[mex][mey]){
+            board[mex][mey] = true;
+            //up -y
+            if (APP.ai.isPossible(mex, mey - 1, board)){
+                area = APP.ai.calculateAreaR(mex, mey-1, board, level-1);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            // down +y
+            if (APP.ai.isPossible(mex, mey + 1, board)){
+                area = APP.ai.calculateAreaR(mex, mey+1, board,level-1);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            // left -x
+            if (APP.ai.isPossible(mex-1, mey, board)){
+                area = APP.ai.calculateAreaR(mex- 1, mey, board, level-1);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            //right + x
+            if (APP.ai.isPossible(mex + 1, mey, board)){
+                area = APP.ai.calculateAreaR(mex + 1, mey, board, level-1);
+                if (area > maxArea){
+                    maxArea = area;
+                }
+            }
+            board[mex][mey] = false;
+        }
+    }
+    return maxArea;
+};
+
+APP.ai.calculateArea3 = function(mex, mey, board){
+    var area = -1;
+    var maxArea = -board.length * board[0].length;
+    if (!board[mex][mey]){
+        board[mex][mey] = true;
+        //up -y
+        if (APP.ai.isPossible(mex, mey - 1, board)){
+            area = APP.ai.calculateAreaR(mex, mey-1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // down +y
+        if (APP.ai.isPossible(mex, mey + 1, board)){
+            area = APP.ai.calculateAreaR(mex, mey+1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // left -x
+        if (APP.ai.isPossible(mex-1, mey, board)){
+            area = APP.ai.calculateAreaR(mex- 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        //right + x
+        if (APP.ai.isPossible(mex + 1, mey, board)){
+            area = APP.ai.calculateAreaR(mex + 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        
+        board[mex][mey] = false;
+    }
+    return maxArea;
+};
+APP.ai.calculateArea2 = function(mex, mey, board){
+    var area = -1;
+    var maxArea = -board.length * board[0].length;
+    if (!board[mex][mey]){
+        board[mex][mey] = true;
+        //up -y
+        if (APP.ai.isPossible(mex, mey - 1, board)){
+            area = APP.ai.calculateArea(mex, mey-1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // down +y
+        if (APP.ai.isPossible(mex, mey + 1, board)){
+            area = APP.ai.calculateArea(mex, mey+1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // left -x
+        if (APP.ai.isPossible(mex-1, mey, board)){
+            area = APP.ai.calculateArea(mex- 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        //right + x
+        if (APP.ai.isPossible(mex + 1, mey, board)){
+            area = APP.ai.calculateArea(mex + 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        
+        board[mex][mey] = false;
+    }
+    
+    return maxArea;
+};
+
+APP.ai.calculateArea3 = function(mex, mey, board){
+    var area = -1;
+    var maxArea = -board.length * board[0].length;
+    if (!board[mex][mey]){
+        board[mex][mey] = true;
+        //up -y
+        if (APP.ai.isPossible(mex, mey - 1, board)){
+            area = APP.ai.calculateArea2(mex, mey-1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // down +y
+        if (APP.ai.isPossible(mex, mey + 1, board)){
+            area = APP.ai.calculateArea2(mex, mey+1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // left -x
+        if (APP.ai.isPossible(mex-1, mey, board)){
+            area = APP.ai.calculateArea2(mex- 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        //right + x
+        if (APP.ai.isPossible(mex + 1, mey, board)){
+            area = APP.ai.calculateArea2(mex + 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        
+        board[mex][mey] = false;
+    }
+    
+    return maxArea;
+};
+
+APP.ai.calculateArea4 = function(mex, mey, board){
+    var area = -1;
+    var maxArea = -board.length * board[0].length;
+    if (!board[mex][mey]){
+        board[mex][mey] = true;
+        //up -y
+        if (APP.ai.isPossible(mex, mey - 1, board)){
+            area = APP.ai.calculateArea3(mex, mey-1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // down +y
+        if (APP.ai.isPossible(mex, mey + 1, board)){
+            area = APP.ai.calculateArea3(mex, mey+1, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        // left -x
+        if (APP.ai.isPossible(mex-1, mey, board)){
+            area = APP.ai.calculateArea3(mex- 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        //right + x
+        if (APP.ai.isPossible(mex + 1, mey, board)){
+            area = APP.ai.calculateArea3(mex + 1, mey, board);
+            if (area > maxArea){
+                maxArea = area;
+            }
+        }
+        
+        board[mex][mey] = false;
+    }
+    
+    return maxArea;
+};
+
 APP.ai.isPossible = function(x, y, board){
+    if (x < 0 || y < 0 || x >= board.height || y >= board[0].height){
+        return false;
+    }
     return !board[x][y];
 };
